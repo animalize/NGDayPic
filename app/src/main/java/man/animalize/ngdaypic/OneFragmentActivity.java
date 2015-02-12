@@ -25,6 +25,8 @@ public abstract class OneFragmentActivity extends Activity {
                     .add(R.id.fragmentContainer, fragment)
                     .commit();
         }
+
+        BackService.setServiceAlarm(getApplicationContext(), true);
     }
 
 }
