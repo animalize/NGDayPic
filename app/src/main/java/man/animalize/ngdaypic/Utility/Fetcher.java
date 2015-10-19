@@ -4,13 +4,14 @@ package man.animalize.ngdaypic.Utility;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 
 public class Fetcher {
     private int mRetryCount = 4;
-    private int mConnectTimeout = 1000 * 10; //10秒
-    private int mReadTimeout = 1000 * 60; //60秒
+    private int mConnectTimeout = 1000 * 12; //12秒
+    private int mReadTimeout = 1000 * 120; //120秒
 
     private byte[] pGetByte(URLConnection con) throws IOException {
         InputStream in = null;
@@ -55,6 +56,19 @@ public class Fetcher {
             }
         }
         return null;
+    }
+
+    public String getString(final String urlString, final String encoding) {
+        byte[] buffer = getByte(urlString);
+
+        if (buffer == null)
+            return null;
+
+        try {
+            return new String(buffer, encoding);
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 }
 

@@ -14,7 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:fadeScrollbars="false"
+        android:maxLines="100"
+        android:scrollbars="vertical"
         android:text="@string/hello_blank_fragment"
-        android:textSize="19sp"/>
+        android:textSize="19sp" />
 
 </LinearLayout>

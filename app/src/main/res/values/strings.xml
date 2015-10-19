@@ -7,5 +7,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="hello_blank_fragment">空白文本</string>
+    <string name="title_activity_main_list">MainListActivity</string>
+    <string name="title_activity_touch_image">查看图片</string>
 
 </resources>
