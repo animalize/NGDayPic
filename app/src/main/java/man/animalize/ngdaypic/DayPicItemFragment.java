@@ -41,7 +41,7 @@ public class DayPicItemFragment
     private byte[] mJpg;
     private TextToSpeech mTts;
 
-
+    // tts的事件处理
     private UtteranceProgressListener ttslistener = new UtteranceProgressListener() {
         @Override
         public void onStart(String utteranceId) {
@@ -61,6 +61,7 @@ public class DayPicItemFragment
         // Required empty public constructor
     }
 
+    // 供DayPicItemActivity调用
     public static DayPicItemFragment newInstance(DayPicItem item) {
         Bundle arg = new Bundle();
         arg.putSerializable("item", item);
@@ -76,7 +77,7 @@ public class DayPicItemFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        // 参数item
+        // 得到参数item
         Bundle arg = getArguments();
         mItem = (DayPicItem) arg.getSerializable("item");
 
@@ -90,6 +91,7 @@ public class DayPicItemFragment
         startActivityForResult(checkIntent, TTSCHECKSUM);
     }
 
+    // 创建tts实例
     protected void instanceTTS() {
         mTts = new TextToSpeech(getActivity(), this);
         mTts.setOnUtteranceProgressListener(ttslistener);
@@ -111,6 +113,7 @@ public class DayPicItemFragment
         }
     }
 
+    // TextToSpeech.OnInitListener的接口
     @Override
     public void onStop() {
         if (mTts != null && mTts.isSpeaking())
@@ -119,6 +122,7 @@ public class DayPicItemFragment
         super.onStop();
     }
 
+    // TextToSpeech.OnInitListener的接口
     @Override
     public void onDestroy() {
         if (mTts != null)
@@ -222,6 +226,7 @@ public class DayPicItemFragment
         }
     }
 
+    // tts引擎初始化之后调用此函数
     @Override
     public void onInit(int status) {
         mTts.setLanguage(Locale.ENGLISH);

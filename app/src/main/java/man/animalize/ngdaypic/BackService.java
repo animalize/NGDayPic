@@ -28,29 +28,40 @@ import man.animalize.ngdaypic.Utility.FileReadWrite;
 public class BackService extends IntentService {
     public static final String FILTER = "man.animalize.ngdaypic.got";
     private static final String TAG = "BackService";
-    private static int POLL_INTERVAL = 1000 * 3600 * 3;
+    private static int POLL_INTERVAL_HOUR = 3;
 
+    // 用于在主线程显示toast
     private Handler mHandler;
 
     public BackService() {
         super(TAG);
     }
 
+    // 得到刷新间隔，小时数
+    public static int getIntervalHour(){
+        return POLL_INTERVAL_HOUR;
+    }
+
     // 启停服务
     public static void setServiceAlarm(Context context, boolean isOn) {
         context = context.getApplicationContext();
 
+        // 创建或得到已有的PendingIntent
         Intent i = new Intent(context, BackService.class);
         PendingIntent pi = PendingIntent.getService(
                 context, 0, i, 0);
 
+        // 得到AlarmManager
         AlarmManager alarmManager = (AlarmManager)
                 context.getSystemService(Context.ALARM_SERVICE);
 
+        // 启动 或 停止
         String t;
         if (isOn) {
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-                    System.currentTimeMillis(), POLL_INTERVAL, pi);
+                    System.currentTimeMillis(),
+                    POLL_INTERVAL_HOUR * 1000 * 3600,
+                    pi);
             t = "每日图片:正在启动服务";
         } else {
             alarmManager.cancel(pi);
@@ -61,6 +72,8 @@ public class BackService extends IntentService {
     }
 
     // 检测服务是否已启动
+    // FLAG_NO_CREATE不创建、只查询
+    // 如果已启动，pi会是PendingIntent
     public static boolean isServiceAlarmOn(Context context) {
         context = context.getApplicationContext();
 
@@ -76,6 +89,7 @@ public class BackService extends IntentService {
         mHandler = new Handler();
     }
 
+    // Toast只能在主UI线程使用
     private void toast(final String str) {
         mHandler.post(new Runnable() {
             @Override
@@ -87,6 +101,7 @@ public class BackService extends IntentService {
         });
     }
 
+    // 获取网站的内容
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private boolean doWork(int type, Fetcher f) {
         DayPicItem item = null;
@@ -188,12 +203,13 @@ public class BackService extends IntentService {
 
         Fetcher f = new Fetcher();
 
+        // 分区获取英文、中文网站
         boolean r1 = doWork(1, f);
         boolean r2 = doWork(2, f);
         if (!r1 && !r2)
             return;
 
-        // 广播
+        // 广播，让ListFragment刷新内容
         Intent i = new Intent(FILTER);
         sendBroadcast(i);
     }
