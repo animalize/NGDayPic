@@ -1,0 +1,11 @@
+<resources>
+
+    <!--
+    Layout alias to replace the single-pane version of the main_menu with a
+    two-pane version on Large screens.
+
+    For more on main_menu aliases, see:
+    http://developer.android.com/training/multiscreen/screensizes.html#TaskUseAliasFilters
+    -->
+
+</resources>
