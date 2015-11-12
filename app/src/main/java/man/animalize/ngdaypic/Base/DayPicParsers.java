@@ -34,7 +34,7 @@ public class DayPicParsers {
                 + "<div id=\"caption\">\\s*"
                 + "<p class=\"publication_time\">(.*?)</p>\\s*"
                 + "<h2>(.*?)</h2>.*?"
-                + "</p>\\s*<p[^>]*>(.*?)(?:<em>|<!-- .article_text-->)";
+                + "</p>\\s*<p[^>]*>(.*?)<em><span>This photo";
 
         Pattern pattern = Pattern.compile(pstr, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(html);
