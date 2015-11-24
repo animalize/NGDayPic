@@ -34,7 +34,7 @@ public class DayPicParsers {
                 + "<div id=\"caption\">\\s*"
                 + "<p class=\"publication_time\">(.*?)</p>\\s*"
                 + "<h2>(.*?)</h2>.*?"
-                + "</p>\\s*<p[^>]*>(.*?)<em><span>This photo";
+                + "</p>\\s*<p[^>]*>(.*?)</p>\\s*<p";
 
         Pattern pattern = Pattern.compile(pstr, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(html);
@@ -79,7 +79,7 @@ public class DayPicParsers {
 
         pstr = "<a href=\"#\">(?:每日一图：)?(.*?)</a>.*?" +
                 "<span class=\"time\">(?:发布时间：)?(.*?)</span>.*?" +
-                "<div class=\"public-p  m-p M-L-article del-bottom\">(.*?)" +
+                "<div class=\"public-p.*?>(.*?)" +
                 "<p";
 
         pattern = Pattern.compile(pstr, Pattern.DOTALL);
