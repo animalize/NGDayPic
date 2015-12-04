@@ -34,7 +34,7 @@ public class DayPicParsers {
                 + "<div id=\"caption\">\\s*"
                 + "<p class=\"publication_time\">(.*?)</p>\\s*"
                 + "<h2>(.*?)</h2>.*?"
-                + "</p>\\s*<p[^>]*>(.*?)</p>\\s*<p";
+                + "</p>\\s*<p[^>]*>(.*?)<!-- .article_text-->";
 
         Pattern pattern = Pattern.compile(pstr, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(html);
@@ -77,10 +77,10 @@ public class DayPicParsers {
             throw new Exception("无法获得html,cn2");
 
 
-        pstr = "<a href=\"#\">(?:每日一图：)?(.*?)</a>.*?" +
+        pstr = "<div class=\"title\">(?:每日一图：)?(.*?)</div>\\s*" +
                 "<span class=\"time\">(?:发布时间：)?(.*?)</span>.*?" +
                 "<div class=\"public-p.*?>(.*?)" +
-                "<p";
+                "</div>\\s*<p";
 
         pattern = Pattern.compile(pstr, Pattern.DOTALL);
         matcher = pattern.matcher(html);
