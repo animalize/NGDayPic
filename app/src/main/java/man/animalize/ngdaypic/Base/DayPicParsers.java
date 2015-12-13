@@ -27,7 +27,7 @@ public class DayPicParsers {
                 + "photography/photo-of-the-day/";
         String html = f.getString(url, "UTF-8");
         if (html == null)
-            throw new Exception("无法获得html");
+            throw new Exception("无法下载英文版html");
 
         String pstr = "<div class=\"primary_photo\">.*?"
                 + "<img src=\"([^\"]+)\".*?"
@@ -55,18 +55,18 @@ public class DayPicParsers {
         Log.i(TAG, "开始解析");
         DayPicItem item = new DayPicItem();
 
-        String url = "http://www.nationalgeographic.com.cn/photography/";
+        String url = "http://www.nationalgeographic.com.cn/photography/photo_of_the_day/";
         String html = f.getString(url, "UTF-8");
         if (html == null)
-            throw new Exception("无法获得html,cn1");
+            throw new Exception("无法下载中文版html, 1");
 
-        String pstr = "<p class=\"every-pic-p\">.*?"
-                + "<a href=\"([^\"]+)\">";
+        String pstr = "<section class=\"show-imgs\">.*?"
+                + "<a href=\"([^\"]+)\"><img";
 
         Pattern pattern = Pattern.compile(pstr, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(html);
         if (!matcher.find()) {
-            throw new Exception("无法用正则解析,cn1");
+            throw new Exception("无法用正则解析, cn1");
         }
 
         String url2 = "http://www.nationalgeographic.com.cn" +
@@ -74,7 +74,7 @@ public class DayPicParsers {
 
         html = f.getString(url2, "UTF-8");
         if (html == null)
-            throw new Exception("无法获得html,cn2");
+            throw new Exception("无法下载中文版html, 2");
 
 
         pstr = "<div class=\"title\">(?:每日一图：)?(.*?)</div>\\s*" +
@@ -85,7 +85,7 @@ public class DayPicParsers {
         pattern = Pattern.compile(pstr, Pattern.DOTALL);
         matcher = pattern.matcher(html);
         if (!matcher.find()) {
-            throw new Exception("无法用正则解析,cn1");
+            throw new Exception("无法用正则解析, cn2");
         }
 
         item.setTitle(removeTag(matcher.group(1)));
