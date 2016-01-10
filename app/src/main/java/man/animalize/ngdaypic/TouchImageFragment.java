@@ -62,9 +62,9 @@ public class TouchImageFragment extends Fragment {
         // 标题，向上按钮
         ActionBar ab = getActivity().getActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-        ab.setTitle("查看图片(" +
-                String.format("%,d", jpg.length) +
-                "字节)");
+        ab.setTitle("图片" + jpgfn +
+                " (" + String.format("%,d", jpg.length) + "字节)"
+        );
 
         // 显示
         TouchImageView touch = (TouchImageView) v.findViewById(R.id.touchid);
