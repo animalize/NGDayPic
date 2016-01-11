@@ -2,6 +2,9 @@ package man.animalize.ngdaypic;
 
 import android.annotation.TargetApi;
 import android.app.Fragment;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -218,6 +221,15 @@ public class DayPicItemFragment
                 }
 
                 getActivity().invalidateOptionsMenu();
+
+                return true;
+
+            case R.id.copytext:
+                Context cont = getActivity();
+                ClipboardManager clipboard = (ClipboardManager) cont.getSystemService(cont.CLIPBOARD_SERVICE);
+
+                ClipData clip = ClipData.newPlainText("", mTextView.getText().toString());
+                clipboard.setPrimaryClip(clip);
 
                 return true;
 

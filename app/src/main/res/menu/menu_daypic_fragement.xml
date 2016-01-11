@@ -3,4 +3,8 @@
         android:id="@+id/ttsid"
         android:showAsAction="always"
         android:title="朗读" />
+    <item
+        android:id="@+id/copytext"
+        android:showAsAction="never"
+        android:title="复制介绍" />
 </menu>
