@@ -104,13 +104,13 @@ public class BackService extends IntentService {
     // 获取网站的内容
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private boolean doWork(int type, Fetcher f) {
-        DayPicItem item = null;
+        DayPicItem item;
 
         // 解析html
         try {
             if (type == 1)
                 item = DayPicParsers.NGDayPicParser(f);
-            else if (type == 2)
+            else // if (type == 2)
                 item = DayPicParsers.CNNGDayPicParser(f);
         } catch (final Exception e) {
             toast(e.toString());
@@ -204,9 +204,12 @@ public class BackService extends IntentService {
         Fetcher f = new Fetcher();
 
         // 分区获取英文、中文网站
-        boolean r1 = doWork(1, f);
+        /*boolean r1 = doWork(1, f);
         boolean r2 = doWork(2, f);
         if (!r1 && !r2)
+            return;*/
+
+        if (!doWork(2, f))
             return;
 
         // 广播，让ListFragment刷新内容
