@@ -77,7 +77,9 @@ public class DayPicParsers {
             throw new Exception("无法下载中文版html, 2");
 
 
-        pstr = "<div class=\"title\">(?:每日一图：)?(.*?)</div>\\s*" +
+        pstr = "<ul class=\"cont picbig\".*?" +
+                "src=\"([^\"]+)\".*?" +
+                "<div class=\"title\">(?:每日一图：)?(.*?)</div>\\s*" +
                 "<span class=\"time\">(?:发布时间：)?(.*?)</span>.*?" +
                 "<div class=\"public-p.*?>(.*?)" +
                 "</div>\\s*<p";
@@ -88,9 +90,10 @@ public class DayPicParsers {
             throw new Exception("无法用正则解析, cn2");
         }
 
-        item.setTitle(removeTag(matcher.group(1)));
-        item.setDate(matcher.group(2));
-        item.setDescrip(removeTag(matcher.group(3)));
+        item.setPicurl(matcher.group(1));
+        item.setTitle(removeTag(matcher.group(2)));
+        item.setDate(matcher.group(3));
+        item.setDescrip(removeTag(matcher.group(4)));
 
         // 忽略“编辑之选”
         if (item.getTitle().startsWith("编辑之选")) {
