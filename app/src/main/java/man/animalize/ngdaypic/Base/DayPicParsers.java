@@ -31,9 +31,9 @@ public class DayPicParsers {
         //再改版别忘了这个!
         //Log.i(TAG, html);
 
-        String pstr = "<meta name=\"twitter:title\" content=\"([^\"]+)\">.*?"
-                + "<meta name=\"twitter:description\" content=\"([^\"]+)\">.*?"
-                + "<meta property=\"og:image\" content=\"([^\"]+)\"/>.*?"
+        String pstr = "<meta property=\"og:title\" content=\"([^\"]+)\"/>.*?"
+                + "<meta property=\"og:description\" content=\"([^\"]+)\"/>.*?"
+                + "<meta name=\"twitter:image:src\" content=\"([^\"]+)\">.*?"
                 + "<meta property=\"gsa_publish_date\" content=\"([^\"]+)\"/>";
 
         Pattern pattern = Pattern.compile(pstr, Pattern.DOTALL);
