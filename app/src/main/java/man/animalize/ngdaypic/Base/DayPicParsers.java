@@ -23,29 +23,33 @@ public class DayPicParsers {
         Log.i(TAG, "开始解析");
         DayPicItem item = new DayPicItem();
 
-        String url = "http://photography.nationalgeographic.com/"
-                + "photography/photo-of-the-day/";
+        String url = "http://photography.nationalgeographic.com/photography/photo-of-the-day/";
         String html = f.getString(url, "UTF-8");
         if (html == null)
             throw new Exception("无法下载英文版html");
 
-        String pstr = "<div class=\"primary_photo\">.*?"
-                + "<img src=\"([^\"]+)\".*?"
-                + "<div id=\"caption\">\\s*"
-                + "<p class=\"publication_time\">(.*?)</p>\\s*"
-                + "<h2>(.*?)</h2>.*?"
-                + "</p>\\s*<p[^>]*>(.*?)<!-- .article_text-->";
+        //再改版别忘了这个!
+        //Log.i(TAG, html);
+
+        String pstr = "<meta name=\"twitter:title\" content=\"([^\"]+)\">.*?"
+                + "<meta name=\"twitter:description\" content=\"([^\"]+)\">.*?"
+                + "<meta property=\"og:image\" content=\"([^\"]+)\"/>.*?"
+                + "<meta property=\"gsa_publish_date\" content=\"([^\"]+)\"/>";
 
         Pattern pattern = Pattern.compile(pstr, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(html);
         if (matcher.find()) {
-            item.setPicurl("http:" + matcher.group(1));
-            item.setTitle(removeTag(matcher.group(3)).replaceAll("[\\[\\]]", ""));
-            item.setDate(removeTag(matcher.group(2)));
-            item.setDescrip(removeTag(matcher.group(4)).replaceAll("[\\[\\]]", ""));
+            item.setPicurl(matcher.group(3));
+            item.setTitle(matcher.group(1));
+            item.setDate(matcher.group(4));
+            item.setDescrip(matcher.group(2));
         } else {
-            throw new Exception("无法用正则解析");
+            throw new Exception("无法用正则解析英文版页面");
         }
+/*        Log.i(TAG, item.getTitle());
+        Log.i(TAG, item.getPicurl());
+        Log.i(TAG, item.getDate());
+        Log.i(TAG, item.getDescrip());*/
 
         return item;
     }
