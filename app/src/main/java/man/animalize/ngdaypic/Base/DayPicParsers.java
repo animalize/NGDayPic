@@ -33,15 +33,14 @@ public class DayPicParsers {
 
         String pstr = "<meta property=\"og:title\" content=\"([^\"]+)\"/>.*?"
                 + "<meta property=\"og:description\" content=\"([^\"]+)\"/>.*?"
-                + "<meta name=\"twitter:image:src\" content=\"([^\"]+)\">.*?"
-                + "<meta property=\"gsa_publish_date\" content=\"([^\"]+)\"/>";
+                + "<meta name=\"twitter:image:src\" content=\"([^\"]+)\">";
 
         Pattern pattern = Pattern.compile(pstr, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(html);
         if (matcher.find()) {
             item.setPicurl(matcher.group(3));
             item.setTitle(matcher.group(1));
-            item.setDate(matcher.group(4));
+            item.setDate("");
             item.setDescrip(matcher.group(2));
         } else {
             throw new Exception("无法用正则解析英文版页面");
