@@ -10,8 +10,8 @@ import java.net.URLConnection;
 
 public class Fetcher {
     private int mRetryCount = 4;
-    private int mConnectTimeout = 1000 * 12; //12秒
-    private int mReadTimeout = 1000 * 120; //120秒
+    private int mConnectTimeout = 1000 * 120; //120秒
+    private int mReadTimeout = 1000 * 240; //240秒
 
     private byte[] pGetByte(URLConnection con) throws IOException {
         InputStream in = null;

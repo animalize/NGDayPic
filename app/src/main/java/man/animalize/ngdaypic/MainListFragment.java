@@ -2,6 +2,7 @@ package man.animalize.ngdaypic;
 
 import android.app.ListFragment;
 import android.app.LoaderManager;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -26,6 +27,8 @@ import android.widget.TextView;
 
 import man.animalize.ngdaypic.Base.DayPicItem;
 import man.animalize.ngdaypic.Base.MyDBHelper;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class MainListFragment extends ListFragment {
 
@@ -134,6 +137,11 @@ public class MainListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // 取消通知栏
+        NotificationManager nm =
+                (NotificationManager) inflater.getContext().getSystemService(NOTIFICATION_SERVICE);
+        nm.cancel(1);
+
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         return view;
     }
