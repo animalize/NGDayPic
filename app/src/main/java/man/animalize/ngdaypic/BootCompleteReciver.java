@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.preference.PreferenceManager;
 
 /**
- * Created by 416 on 10-19 019.
+ * Created by 416 on 10-19 019
  */
 public class BootCompleteReciver extends BroadcastReceiver {
     private static final String TAG = "BootCompleteReciver";
