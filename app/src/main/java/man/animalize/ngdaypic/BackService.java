@@ -38,7 +38,7 @@ public class BackService extends IntentService {
     }
 
     // 得到刷新间隔，小时数
-    public static int getIntervalHour(){
+    public static int getIntervalHour() {
         return POLL_INTERVAL_HOUR;
     }
 
@@ -87,6 +87,13 @@ public class BackService extends IntentService {
     public void onCreate() {
         super.onCreate();
         mHandler = new Handler();
+    }
+
+    // 服务被杀后自动重启、并重新传入intent
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        return START_REDELIVER_INTENT;
     }
 
     // Toast只能在主UI线程使用
