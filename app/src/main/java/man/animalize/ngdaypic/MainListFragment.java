@@ -129,9 +129,15 @@ public class MainListFragment extends ListFragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         // 注销广播接收器
         getActivity().unregisterReceiver(mReciver);
+
+        // 关闭cursor
+        if (mCursor != null) {
+            mCursor.close();
+        }
+
+        super.onDestroy();
     }
 
     @Override
