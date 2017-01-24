@@ -52,7 +52,7 @@ public class Fetcher {
         for (int i = 0; i < mRetryCount; i++) {
             try {
                 return pGetByte(con);
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
         }
         return null;
