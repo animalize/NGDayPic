@@ -225,7 +225,7 @@ public class DayPicItemFragment
 
             case R.id.copytext:
                 Context cont = getActivity();
-                ClipboardManager clipboard = (ClipboardManager) cont.getSystemService(cont.CLIPBOARD_SERVICE);
+                ClipboardManager clipboard = (ClipboardManager) cont.getSystemService(Context.CLIPBOARD_SERVICE);
 
                 ClipData clip = ClipData.newPlainText("", mTextView.getText().toString());
                 clipboard.setPrimaryClip(clip);

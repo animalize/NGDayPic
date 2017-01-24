@@ -9,7 +9,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class Fetcher {
-    @SuppressWarnings("FieldCanBeLocal")
     private int mRetryCount = 4;
     private int mConnectTimeout = 1000 * 360; //360秒
     private int mReadTimeout = 1000 * 600; //600秒
