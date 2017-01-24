@@ -13,6 +13,10 @@ public class BootCompleteReciver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if(intent == null ||
+                !intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED))
+            return;
+
         // 启停服务
         boolean should_on = PreferenceManager
                 .getDefaultSharedPreferences(context)
