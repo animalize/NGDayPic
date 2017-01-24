@@ -38,7 +38,6 @@ public class DayPicItemFragment
     private static final String TAG = "DayPicItemFragment";
     private static final int TTSCHECKSUM = 1234;
 
-    private ImageView mImageView;
     private TextView mTextView;
     private DayPicItem mItem;
     private byte[] mJpg;
@@ -141,7 +140,7 @@ public class DayPicItemFragment
 
         // Inflate the main_menu for this fragment
         View v = inflater.inflate(R.layout.fragment_day_pic_item, container, false);
-        mImageView = (ImageView) v.findViewById(R.id.image_view);
+        ImageView mImageView = (ImageView) v.findViewById(R.id.image_view);
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
