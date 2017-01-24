@@ -174,7 +174,7 @@ public class BackService extends IntentService {
         // 通知栏
         if (Build.VERSION.SDK_INT >= 16 && !MainListFragment.isRunning()) {
             Intent i = new Intent(this, MainListActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             i.putExtra("item", item);
             PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
 
