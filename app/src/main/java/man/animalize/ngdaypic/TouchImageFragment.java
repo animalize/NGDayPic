@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Locale;
+
 import man.animalize.ngdaypic.ThirdPartLib.TouchImageView;
 import man.animalize.ngdaypic.Utility.FileReadWrite;
 
@@ -62,7 +64,8 @@ public class TouchImageFragment extends Fragment {
         // 标题，向上按钮
         ActionBar ab = getActivity().getActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-        ab.setTitle(String.format("图片%s (%,d字节)", jpgfn, jpg.length));
+        ab.setTitle(String.format(Locale.getDefault(),
+                "图片%s (%,d字节)", jpgfn, jpg.length));
 
         // 显示
         TouchImageView touch = (TouchImageView) v.findViewById(R.id.touchid);
