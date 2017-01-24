@@ -207,7 +207,7 @@ public class MainListFragment extends ListFragment {
                 boolean is_on = BackService.isServiceAlarmOn(getActivity());
                 BackService.setServiceAlarm(getActivity(), !is_on);
                 PreferenceManager.getDefaultSharedPreferences(getActivity())
-                        .edit().putBoolean("should_on", !is_on).commit();
+                        .edit().putBoolean("should_on", !is_on).apply();
 
                 getActivity().invalidateOptionsMenu();
 
