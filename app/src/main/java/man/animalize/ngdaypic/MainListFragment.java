@@ -148,8 +148,7 @@ public class MainListFragment extends ListFragment {
                 (NotificationManager) inflater.getContext().getSystemService(NOTIFICATION_SERVICE);
         nm.cancel(1);
 
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_list, container, false);
     }
 
     @Override

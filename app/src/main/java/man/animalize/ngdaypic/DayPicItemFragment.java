@@ -211,7 +211,7 @@ public class DayPicItemFragment
                 if (mTts.isSpeaking()) {
                     mTts.stop();
                 } else {
-                    HashMap<String, String> map = new HashMap();
+                    HashMap<String, String> map = new HashMap<String, String>();
                     map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
 
                     mTts.speak(mItem.getTitle() + ".\n" + mItem.getDescrip(),
