@@ -1,16 +1,17 @@
 package man.animalize.ngdaypic;
 
 import android.annotation.TargetApi;
-import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,6 +42,11 @@ public class DayPicItemFragment
     private TextView mTextView;
     private DayPicItem mItem;
     private byte[] mJpg;
+    private Bitmap mBmp;
+
+    private ImageView mImageView;
+    private int mIVWidth, mIVHeight;
+
     private TextToSpeech mTts;
 
     // tts的事件处理
@@ -72,6 +78,45 @@ public class DayPicItemFragment
         f.setArguments(arg);
 
         return f;
+    }
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+    public static Bitmap decodeSampledBitmapFromByteArrary(byte[] jpg,
+                                                           int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(jpg, 0, jpg.length, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeByteArray(jpg, 0, jpg.length, options);
     }
 
     @Override
@@ -140,7 +185,7 @@ public class DayPicItemFragment
 
         // Inflate the main_menu for this fragment
         View v = inflater.inflate(R.layout.fragment_day_pic_item, container, false);
-        ImageView mImageView = (ImageView) v.findViewById(R.id.image_view);
+        mImageView = (ImageView) v.findViewById(R.id.image_view);
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,20 +197,17 @@ public class DayPicItemFragment
                 startActivity(i);
             }
         });
-
-        mTextView = (TextView) v.findViewById(R.id.text_view);
-        mTextView.setMovementMethod(new ScrollingMovementMethod());
-
         // 图片
-        if (mItem.getIcon() != null && mJpg != null) {
-            mImageView.setImageBitmap(
-                    BitmapFactory.decodeByteArray(mJpg, 0, mJpg.length)
-            );
+        if (mJpg != null) {
+            mBmp = decodeSampledBitmapFromByteArrary(mJpg, 500, 400);
+            mImageView.setImageBitmap(mBmp);
         } else {
             mImageView.setVisibility(View.GONE);
         }
 
         // 文字
+        mTextView = (TextView) v.findViewById(R.id.text_view);
+        mTextView.setMovementMethod(new ScrollingMovementMethod());
         mTextView.setText("标题：" + mItem.getTitle() +
                 "\n介绍：" + mItem.getDescrip() +
                 "\n日期：" + mItem.getDate());

@@ -1,18 +1,18 @@
 package man.animalize.ngdaypic;
 
-import android.app.ListFragment;
-import android.app.LoaderManager;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,9 +41,9 @@ public class MainListFragment extends ListFragment {
             new LoaderManager.LoaderCallbacks<MyDBHelper.ItemCursor>() {
                 // 创建Loader后，开始Load
                 @Override
-                public Loader onCreateLoader(int id, Bundle args) {
+                public Loader<MyDBHelper.ItemCursor> onCreateLoader(int id, Bundle args) {
 
-                    return new CursorLoader(getActivity()) {
+                    return (Loader) new CursorLoader(getActivity()) {
                         @Override
                         public Cursor loadInBackground() {
                             MyDBHelper db = MyDBHelper.getInstance(getActivity());
@@ -54,9 +54,15 @@ public class MainListFragment extends ListFragment {
                     };
                 }
 
+
+                @Override
+                public void onLoaderReset(android.support.v4.content.Loader<MyDBHelper.ItemCursor> loader) {
+
+                }
+
                 // Load结束
                 @Override
-                public void onLoadFinished(Loader<MyDBHelper.ItemCursor> loader, MyDBHelper.ItemCursor data) {
+                public void onLoadFinished(android.support.v4.content.Loader<MyDBHelper.ItemCursor> loader, MyDBHelper.ItemCursor data) {
                     mCursor = data;
 
                     // 为adapter设置cursor
@@ -69,9 +75,6 @@ public class MainListFragment extends ListFragment {
                     Log.i(TAG, "onLoadFinished，当前数量" + mCursor.getCount());
                 }
 
-                @Override
-                public void onLoaderReset(Loader loader) {
-                }
             };
 
     // 广播接收器。 当数据库改变时，用doQuery()刷新显示列表
@@ -162,7 +165,7 @@ public class MainListFragment extends ListFragment {
         //mCursor.moveToPosition(temp_posi);
 
         // start activity
-        Intent i = new Intent(getActivity(), DayPicItemActivity.class);
+        Intent i = new Intent(getActivity(), ItemPagerActivity.class);
         i.putExtra("item", item);
         startActivity(i);
     }

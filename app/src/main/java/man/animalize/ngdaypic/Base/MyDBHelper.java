@@ -19,9 +19,13 @@ public class MyDBHelper extends SQLiteOpenHelper {
     private static final String TABLE_DAYPIC = "daypic_tbl";
     private static MyDBHelper singleton;
 
-
+    private static ItemCursor currentCursor;
     private MyDBHelper(Context context) {
         super(context, DB_NAME, null, VERSION);
+    }
+
+    public static ItemCursor getCurrentCursor() {
+        return currentCursor;
     }
 
     public static MyDBHelper getInstance(Context context) {
@@ -144,7 +148,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
                 "_id desc");
 
         //Log.i(TAG, "数量:" + c.getCount());
-        return new ItemCursor(c);
+        currentCursor = new ItemCursor(c);
+        return currentCursor;
     }
 
     // 专为DayPicItem的CursorWarpper

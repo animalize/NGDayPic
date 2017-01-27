@@ -1,7 +1,7 @@
 package man.animalize.ngdaypic;
 
-import android.app.Fragment;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 
 public class TouchImageActivity extends OneFragmentActivity {
 

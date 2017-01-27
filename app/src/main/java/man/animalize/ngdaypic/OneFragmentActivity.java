@@ -1,12 +1,12 @@
 package man.animalize.ngdaypic;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 
 // 只有一个Fragment的Activity
-public abstract class OneFragmentActivity extends Activity {
+public abstract class OneFragmentActivity extends FragmentActivity {
 
     // 生成Fragment对象
     protected abstract Fragment createFragment();
@@ -14,7 +14,7 @@ public abstract class OneFragmentActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(android.R.id.content);
 
         if (fragment == null) {
