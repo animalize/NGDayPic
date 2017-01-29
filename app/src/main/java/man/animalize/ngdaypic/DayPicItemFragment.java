@@ -183,8 +183,8 @@ public class DayPicItemFragment
         // 不显示图片，清理内存
         if (mJpg != null) {
             BitmapDrawable b = (BitmapDrawable) mImageView.getDrawable();
-            b.getBitmap().recycle();
             mImageView.setImageDrawable(null);
+            b.getBitmap().recycle();
         }
     }
 
