@@ -39,9 +39,9 @@ public class DayPicParsers {
         Matcher matcher = pattern.matcher(html);
         if (matcher.find()) {
             item.setPicurl(matcher.group(3));
-            item.setTitle(matcher.group(1));
+            item.setTitle(removeTag(matcher.group(1)));
             item.setDate("");
-            item.setDescrip(matcher.group(2));
+            item.setDescrip(removeTag(matcher.group(2)));
         } else {
             throw new Exception("无法用正则解析英文版页面");
         }
