@@ -278,10 +278,7 @@ public class MainListFragment extends ListFragment {
             }
 
             // 标题、日期
-            TextView title = holder.title;
             holder.title.setText(" " + item.getTitle());
-
-            TextView date = holder.date;
             holder.date.setText("  " + item.getDate());
         }
 
