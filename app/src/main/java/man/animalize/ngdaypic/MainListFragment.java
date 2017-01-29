@@ -222,6 +222,12 @@ public class MainListFragment extends ListFragment {
 
     }
 
+    private class ViewHolder {
+        public ImageView icon;
+        public TextView title;
+        public TextView date;
+    }
+
     private class ItemCursorAdapter extends CursorAdapter {
         // 小图标的点击处理
         private MyClickListener myListener = new MyClickListener();
@@ -239,8 +245,15 @@ public class MainListFragment extends ListFragment {
                     parent, false);
 
             // 点击图片的事件
-            ImageView img = (ImageView) v.findViewById(R.id.imgviewid);
-            img.setOnClickListener(myListener);
+            ImageView icon = (ImageView) v.findViewById(R.id.imgviewid);
+            icon.setOnClickListener(myListener);
+
+            // holder
+            ViewHolder holder = new ViewHolder();
+            holder.icon = icon;
+            holder.title = (TextView) v.findViewById(R.id.texttitleid);
+            holder.date = (TextView) v.findViewById(R.id.textdateid);
+            v.setTag(holder);
 
             return v;
         }
@@ -252,24 +265,24 @@ public class MainListFragment extends ListFragment {
             if (item == null)
                 return;
 
+            ViewHolder holder = (ViewHolder) view.getTag();
+
             // 显示小图标
-            final ImageView img = (ImageView) view.findViewById(R.id.imgviewid);
             byte[] icon = item.getIcon();
             if (icon != null) {
-
-                img.setImageBitmap(BitmapFactory.decodeByteArray(icon, 0, icon.length));
-                img.setTag((int) item.get_id());
+                holder.icon.setImageBitmap(BitmapFactory.decodeByteArray(icon, 0, icon.length));
+                holder.icon.setTag((int) item.get_id());
             } else {
-                img.setImageResource(android.R.color.transparent);
-                img.setTag(-1);
+                holder.icon.setImageResource(android.R.color.transparent);
+                holder.icon.setTag(-1);
             }
 
             // 标题、日期
-            TextView title = (TextView) view.findViewById(R.id.texttitleid);
-            title.setText(" " + item.getTitle());
+            TextView title = holder.title;
+            holder.title.setText(" " + item.getTitle());
 
-            TextView date = (TextView) view.findViewById(R.id.textdateid);
-            date.setText("  " + item.getDate());
+            TextView date = holder.date;
+            holder.date.setText("  " + item.getDate());
         }
 
         // 图片点击监听器
