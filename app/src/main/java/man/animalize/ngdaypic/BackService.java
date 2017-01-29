@@ -145,7 +145,7 @@ public class BackService extends IntentService {
                 //Log.i(TAG, "原图大小" + imgBuffer.length);
 
                 // 缩略图
-                byte[] icon = PictureUtils.getScaledDrawable(imgBuffer);
+                byte[] icon = PictureUtils.getIcon(imgBuffer);
                 item.setIcon(icon);
                 //Log.i(TAG, "缩略图大小" + icon.length);
             }

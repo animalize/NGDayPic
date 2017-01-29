@@ -256,6 +256,7 @@ public class MainListFragment extends ListFragment {
             final ImageView img = (ImageView) view.findViewById(R.id.imgviewid);
             byte[] icon = item.getIcon();
             if (icon != null) {
+
                 img.setImageBitmap(BitmapFactory.decodeByteArray(icon, 0, icon.length));
                 img.setTag((int) item.get_id());
             } else {

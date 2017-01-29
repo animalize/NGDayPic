@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 
 import man.animalize.ngdaypic.Base.DayPicItem;
 import man.animalize.ngdaypic.Base.MyDBHelper;
@@ -62,9 +61,9 @@ public class ItemPagerActivity extends FragmentActivity {
         });
 
         int posi = mCurrentCursor.getPosition();
-        DayPicItem item = mCurrentCursor.getItem();
-        Log.d("ddddddd", "" + posi);
         mViewPager.setCurrentItem(posi);
+
+        DayPicItem item = (DayPicItem) getIntent().getSerializableExtra("item");
         setTitle(item.getTitle());
     }
 
