@@ -172,20 +172,24 @@ public class DayPicItemFragment
         }
     }
 
-    // TextToSpeech.OnInitListener的接口
     @Override
-    public void onStop() {
+    public void onPause() {
         if (mTts != null && mTts.isSpeaking())
             mTts.stop();
 
-        super.onStop();
+        super.onPause();
+    }
 
+    @Override
+    public void onStop() {
         // 不显示图片，清理内存
         if (mJpg != null) {
             BitmapDrawable b = (BitmapDrawable) mImageView.getDrawable();
             mImageView.setImageDrawable(null);
             b.getBitmap().recycle();
         }
+
+        super.onStop();
     }
 
     // TextToSpeech.OnInitListener的接口
