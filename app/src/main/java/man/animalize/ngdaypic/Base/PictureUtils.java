@@ -23,13 +23,15 @@ public class PictureUtils {
         float srcHeight = options.outHeight;
 
         int inSampleSize = 1;
+
         if (srcHeight > destHeight || srcWidth > destWidth) {
-            if (srcWidth > srcHeight) {
-                inSampleSize = Math.round(srcHeight / destHeight);
-            } else {
+            if (destWidth < destHeight) {
                 inSampleSize = Math.round(srcWidth / destWidth);
+            } else {
+                inSampleSize = Math.round(srcHeight / destHeight);
             }
         }
+        //Log.i("缩放", srcWidth + " " + srcHeight + " " + inSampleSize);
 
         options = new BitmapFactory.Options();
         options.inSampleSize = inSampleSize;
