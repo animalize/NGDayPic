@@ -6,20 +6,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import man.animalize.ngdaypic.Base.DayPicItem;
 import man.animalize.ngdaypic.Base.MyDBHelper;
 
 public class ItemPagerActivity extends FragmentActivity {
-    private MyDBHelper.ItemCursor mCurrentCursor;
     private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // mCurrentCursor
-        mCurrentCursor = MyDBHelper.getCurrentCursor();
 
         // ViewPager
         mViewPager = new ViewPager(this);
@@ -33,9 +31,13 @@ public class ItemPagerActivity extends FragmentActivity {
 
             @Override
             public void onPageSelected(int position) {
-                mCurrentCursor.moveToPosition(position);
-                DayPicItem item = mCurrentCursor.getItem();
-                setTitle(item.getTitle());
+                MyDBHelper db = MyDBHelper.getInstance(ItemPagerActivity.this);
+
+                synchronized (db) {
+                    db.getCurrentCursor().moveToPosition(position);
+                    DayPicItem item = db.getCurrentCursor().getItem();
+                    setTitle(item.getTitle());
+                }
             }
 
             @Override
@@ -45,25 +47,43 @@ public class ItemPagerActivity extends FragmentActivity {
         });
         setContentView(mViewPager);
 
+        // PagerAdapter
         FragmentManager fm = getSupportFragmentManager();
-        mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) {
+        PagerAdapter pa = new FragmentStatePagerAdapter(fm) {
             @Override
             public Fragment getItem(int position) {
-                mCurrentCursor.moveToPosition(position);
-                DayPicItem item = mCurrentCursor.getItem();
+                MyDBHelper db = MyDBHelper.getInstance(ItemPagerActivity.this);
 
-                return DayPicItemFragment.newInstance(item);
+                synchronized (db) {
+                    db.getCurrentCursor().moveToPosition(position);
+                    DayPicItem item = db.getCurrentCursor().getItem();
+                    return DayPicItemFragment.newInstance(item);
+                }
+
             }
 
             @Override
             public int getCount() {
-                return mCurrentCursor.getCount();
+                int posi;
+                MyDBHelper db = MyDBHelper.getInstance(ItemPagerActivity.this);
+                synchronized (db) {
+                    return db.getCurrentCursor().getCount();
+                }
             }
-        });
+        };
+        mViewPager.setAdapter(pa);
+        MyDBHelper.addAdapter(pa);
 
+        // show
         Intent i = getIntent();
         mViewPager.setCurrentItem(i.getIntExtra("posi", 0));
         setTitle(i.getStringExtra("title"));
     }
 
+    @Override
+    protected void onDestroy() {
+        MyDBHelper.delAdapter(mViewPager.getAdapter());
+
+        super.onDestroy();
+    }
 }

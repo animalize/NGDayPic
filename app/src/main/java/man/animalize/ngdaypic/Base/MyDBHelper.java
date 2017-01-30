@@ -6,9 +6,11 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MyDBHelper extends SQLiteOpenHelper {
@@ -18,14 +20,11 @@ public class MyDBHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;
     private static final String TABLE_DAYPIC = "daypic_tbl";
     private static MyDBHelper singleton;
+    private static List<PagerAdapter> adapters = new ArrayList<PagerAdapter>();
 
     private static ItemCursor currentCursor;
     private MyDBHelper(Context context) {
         super(context, DB_NAME, null, VERSION);
-    }
-
-    public static ItemCursor getCurrentCursor() {
-        return currentCursor;
     }
 
     public static MyDBHelper getInstance(Context context) {
@@ -33,6 +32,25 @@ public class MyDBHelper extends SQLiteOpenHelper {
             singleton = new MyDBHelper(context.getApplicationContext());
         }
         return singleton;
+    }
+
+    public static void addAdapter(PagerAdapter adapter) {
+        adapters.add(adapter);
+    }
+
+    public static void delAdapter(PagerAdapter adapter) {
+        adapters.remove(adapter);
+    }
+
+    private static void notifyAdapter() {
+        //Log.i("PagerAdapters", ""+adapters.size());
+        for (PagerAdapter a : adapters) {
+            a.notifyDataSetChanged();
+        }
+    }
+
+    public ItemCursor getCurrentCursor() {
+        return currentCursor;
     }
 
     // 首次运行，创建数据库
@@ -149,6 +167,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
 
         //Log.i(TAG, "数量:" + c.getCount());
         currentCursor = new ItemCursor(c);
+
+        notifyAdapter();
         return currentCursor;
     }
 
