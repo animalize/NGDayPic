@@ -1,5 +1,6 @@
 package man.animalize.ngdaypic;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -60,11 +61,9 @@ public class ItemPagerActivity extends FragmentActivity {
             }
         });
 
-        int posi = mCurrentCursor.getPosition();
-        mViewPager.setCurrentItem(posi);
-
-        DayPicItem item = (DayPicItem) getIntent().getSerializableExtra("item");
-        setTitle(item.getTitle());
+        Intent i = getIntent();
+        mViewPager.setCurrentItem(i.getIntExtra("posi", 0));
+        setTitle(i.getStringExtra("title"));
     }
 
 }

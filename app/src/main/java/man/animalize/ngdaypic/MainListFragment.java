@@ -157,16 +157,13 @@ public class MainListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-
-        // 从cursor得到item
-        // int temp_posi = mCursor.getPosition();
-        mCursor.moveToPosition(position);
-        DayPicItem item = mCursor.getItem();
-        //mCursor.moveToPosition(temp_posi);
+        ViewHolder holder = (ViewHolder) v.getTag();
+        CharSequence title = holder.title.getText();
 
         // start activity
         Intent i = new Intent(getActivity(), ItemPagerActivity.class);
-        i.putExtra("item", item);
+        i.putExtra("posi", position);
+        i.putExtra("title", title);
         startActivity(i);
     }
 
