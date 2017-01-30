@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 
@@ -20,9 +22,10 @@ public class MyDBHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;
     private static final String TABLE_DAYPIC = "daypic_tbl";
     private static MyDBHelper singleton;
-    private static List<PagerAdapter> adapters = new ArrayList<PagerAdapter>();
+    private static List<PagerAdapter> mAdapters = new ArrayList<PagerAdapter>();
 
     private static ItemCursor currentCursor;
+
     private MyDBHelper(Context context) {
         super(context, DB_NAME, null, VERSION);
     }
@@ -35,18 +38,30 @@ public class MyDBHelper extends SQLiteOpenHelper {
     }
 
     public static void addAdapter(PagerAdapter adapter) {
-        adapters.add(adapter);
+        synchronized (mAdapters) {
+            mAdapters.add(adapter);
+        }
     }
 
     public static void delAdapter(PagerAdapter adapter) {
-        adapters.remove(adapter);
+        synchronized (mAdapters) {
+            mAdapters.remove(adapter);
+        }
     }
 
     private static void notifyAdapter() {
-        //Log.i("PagerAdapters", ""+adapters.size());
-        for (PagerAdapter a : adapters) {
-            a.notifyDataSetChanged();
-        }
+        //Log.i("PagerAdapters", ""+mAdapters.size());
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (mAdapters) {
+                    for (PagerAdapter a : mAdapters) {
+                        a.notifyDataSetChanged();
+                    }
+                }
+            }
+        });
     }
 
     public ItemCursor getCurrentCursor() {
@@ -109,6 +124,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
         long id = getWritableDatabase().insert(TABLE_DAYPIC, null, cv);
         Log.i(TAG, "数据库id：" + id);
 
+        notifyAdapter();
+
         return id;
     }
 
@@ -156,6 +173,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
                 "WHERE _id IN(SELECT _id FROM daypic_tbl ORDER BY _id LIMIT ?);";
         db.execSQL(sql, new String[]{String.valueOf(delcount)});
 
+        notifyAdapter();
         return list;
     }
 
