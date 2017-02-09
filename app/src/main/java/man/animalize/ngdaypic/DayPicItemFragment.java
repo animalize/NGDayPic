@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -23,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -31,7 +32,6 @@ import man.animalize.ngdaypic.Utility.FileReadWrite;
 
 import static android.speech.tts.TextToSpeech.OnInitListener;
 import static android.speech.tts.TextToSpeech.QUEUE_FLUSH;
-import static man.animalize.ngdaypic.Base.PictureUtils.getBitmapForView;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
 public class DayPicItemFragment
@@ -162,34 +162,11 @@ public class DayPicItemFragment
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        // 显示图片
-        if (mJpg != null) {
-            Bitmap bm = getBitmapForView(getActivity(), mJpg);
-            mImageView.setImageBitmap(bm);
-        }
-    }
-
-    @Override
     public void onPause() {
         if (mTts != null && mTts.isSpeaking())
             mTts.stop();
 
         super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        // 不显示图片，清理内存
-        if (mJpg != null) {
-            BitmapDrawable b = (BitmapDrawable) mImageView.getDrawable();
-            mImageView.setImageDrawable(null);
-            b.getBitmap().recycle();
-        }
-
-        super.onStop();
     }
 
     // TextToSpeech.OnInitListener的接口
@@ -223,6 +200,13 @@ public class DayPicItemFragment
         // 图片
         if (mJpg == null) {
             mImageView.setVisibility(View.GONE);
+        } else {
+            //Bitmap bm = getBitmapForView(getActivity(), mJpg);
+            //mImageView.setImageBitmap(bm);
+            Glide.with(getActivity())
+                    .load(mJpg)
+                    .into(mImageView);
+
         }
 
         // 文字
@@ -236,6 +220,12 @@ public class DayPicItemFragment
         getActivity().invalidateOptionsMenu();
 
         return v;
+    }
+
+    @Override
+    public void onDestroyView() {
+        Glide.clear(mImageView);
+        super.onDestroyView();
     }
 
     @Override

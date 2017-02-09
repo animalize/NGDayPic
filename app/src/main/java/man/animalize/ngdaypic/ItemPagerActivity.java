@@ -22,7 +22,7 @@ public class ItemPagerActivity extends FragmentActivity {
         // ViewPager
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.viewPager);
-        mViewPager.setOffscreenPageLimit(0);
+        //mViewPager.setOffscreenPageLimit(1);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
