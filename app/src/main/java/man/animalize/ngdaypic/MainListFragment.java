@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
@@ -24,6 +23,8 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import man.animalize.ngdaypic.Base.DayPicItem;
 import man.animalize.ngdaypic.Base.MyDBHelper;
@@ -267,7 +268,8 @@ public class MainListFragment extends ListFragment {
             // 显示小图标
             byte[] icon = item.getIcon();
             if (icon != null) {
-                holder.icon.setImageBitmap(BitmapFactory.decodeByteArray(icon, 0, icon.length));
+                Glide.with(context).load(icon).dontAnimate().into(holder.icon);
+                //holder.icon.setImageBitmap(BitmapFactory.decodeByteArray(icon, 0, icon.length));
                 holder.icon.setTag((int) item.get_id());
             } else {
                 holder.icon.setImageResource(android.R.color.transparent);
