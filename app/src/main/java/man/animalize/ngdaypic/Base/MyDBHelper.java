@@ -56,97 +56,105 @@ public class MyDBHelper extends SQLiteOpenHelper {
 
     // 是否已存在 标题 及 日期
     public boolean isTitleDateExist(DayPicItem item) {
-        SQLiteDatabase db = getWritableDatabase();
+        synchronized (singleton) {
+            SQLiteDatabase db = getWritableDatabase();
 
-        String sql = "SELECT * FROM daypic_tbl WHERE title=? AND date=?";
-        Cursor c = db.rawQuery(sql, new String[]{item.getTitle(), item.getDate()});
-        if (c.moveToFirst()) {
-            c.close();
-            db.close();
-            return true;
-        } else {
-            c.close();
-            db.close();
-            return false;
+            String sql = "SELECT * FROM daypic_tbl WHERE title=? AND date=?";
+            Cursor c = db.rawQuery(sql, new String[]{item.getTitle(), item.getDate()});
+            if (c.moveToFirst()) {
+                c.close();
+                db.close();
+                return true;
+            } else {
+                c.close();
+                db.close();
+                return false;
+            }
         }
     }
 
     // 写入数据，返回数据id
     public long insertItem(DayPicItem item) {
-        // 写入
-        ContentValues cv = new ContentValues();
-        cv.put("title", item.getTitle());
-        cv.put("date", item.getDate());
-        cv.put("descrip", item.getDescrip());
+        synchronized (singleton) {
+            // 写入
+            ContentValues cv = new ContentValues();
+            cv.put("title", item.getTitle());
+            cv.put("date", item.getDate());
+            cv.put("descrip", item.getDescrip());
 
-        if (item.getIcon() == null)
-            cv.putNull("icon");
-        else
-            cv.put("icon", item.getIcon());
+            if (item.getIcon() == null)
+                cv.putNull("icon");
+            else
+                cv.put("icon", item.getIcon());
 
-        long id = getWritableDatabase().insert(TABLE_DAYPIC, null, cv);
-        Log.i(TAG, "数据库id：" + id);
+            long id = getWritableDatabase().insert(TABLE_DAYPIC, null, cv);
+            Log.i(TAG, "数据库id：" + id);
 
-        hasChanged = true;
+            hasChanged = true;
 
-        return id;
+            return id;
+        }
     }
 
     // 删除旧数据，返回图片id的List
     public ArrayList<Integer> delOlds() {
-        SQLiteDatabase db = getWritableDatabase();
+        synchronized (singleton) {
+            SQLiteDatabase db = getWritableDatabase();
 
-        // 得到总行数
-        String sql = "SELECT COUNT(*) FROM daypic_tbl";
-        Cursor cursor = db.rawQuery(sql, null);
+            // 得到总行数
+            String sql = "SELECT COUNT(*) FROM daypic_tbl";
+            Cursor cursor = db.rawQuery(sql, null);
 
-        cursor.moveToFirst();
-        int count = cursor.getInt(0);
-        cursor.close();
+            cursor.moveToFirst();
+            int count = cursor.getInt(0);
+            cursor.close();
 
-        if (count <= COUNT_LIMIT)
-            return null;
+            if (count <= COUNT_LIMIT)
+                return null;
 
-        // 得到要删除的_id
-        ArrayList<Integer> list = new ArrayList<Integer>();
+            // 得到要删除的_id
+            ArrayList<Integer> list = new ArrayList<Integer>();
 
-        int delcount = count - COUNT_LIMIT;
-        sql = "SELECT _id, icon FROM daypic_tbl ORDER BY _id LIMIT ?";
-        cursor = db.rawQuery(sql, new String[]{String.valueOf(delcount)});
+            int delcount = count - COUNT_LIMIT;
+            sql = "SELECT _id, icon FROM daypic_tbl ORDER BY _id LIMIT ?";
+            cursor = db.rawQuery(sql, new String[]{String.valueOf(delcount)});
 
-        cursor.moveToFirst();
-        while (true) {
-            if (cursor.isAfterLast())
-                break;
+            cursor.moveToFirst();
+            while (true) {
+                if (cursor.isAfterLast())
+                    break;
 
-            int tempid = cursor.getInt(0);
-            byte[] tempicon = cursor.getBlob(1);
+                int tempid = cursor.getInt(0);
+                byte[] tempicon = cursor.getBlob(1);
 
-            Log.i(TAG, "要删除的id:" + tempid);
+                Log.i(TAG, "要删除的id:" + tempid);
 
-            if (tempicon != null)
-                list.add(tempid);
+                if (tempicon != null)
+                    list.add(tempid);
 
-            cursor.moveToNext();
+                cursor.moveToNext();
+            }
+            cursor.close();
+
+            // 删除数据
+            sql = "DELETE FROM daypic_tbl " +
+                    "WHERE _id IN(SELECT _id FROM daypic_tbl ORDER BY _id LIMIT ?);";
+            db.execSQL(sql, new String[]{String.valueOf(delcount)});
+
+            hasChanged = true;
+
+            return list;
         }
-        cursor.close();
-
-        // 删除数据
-        sql = "DELETE FROM daypic_tbl " +
-                "WHERE _id IN(SELECT _id FROM daypic_tbl ORDER BY _id LIMIT ?);";
-        db.execSQL(sql, new String[]{String.valueOf(delcount)});
-
-        hasChanged = true;
-
-        return list;
     }
 
     public ArrayList<DayPicItem> getArrayList() {
-        if (mList == null || hasChanged) {
-            mList = queryItems();
-            hasChanged = false;
+        synchronized (singleton) {
+            if (mList == null || hasChanged) {
+                mList = queryItems();
+                hasChanged = false;
+            }
+            return mList;
         }
-        return mList;
     }
 
     // 用于显示列表
