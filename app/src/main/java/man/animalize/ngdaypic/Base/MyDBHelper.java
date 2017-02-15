@@ -157,7 +157,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
 
         //Log.i(TAG, "数量:" + c.getCount());
 
-        DayPicItem p;
         ArrayList<DayPicItem> ret = new ArrayList<>();
 
         if (c.moveToFirst()) {
