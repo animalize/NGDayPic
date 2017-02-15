@@ -3,16 +3,11 @@ package man.animalize.ngdaypic.Base;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class MyDBHelper extends SQLiteOpenHelper {
@@ -22,9 +17,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;
     private static final String TABLE_DAYPIC = "daypic_tbl";
     private static MyDBHelper singleton;
-    private static List<PagerAdapter> mAdapters = new ArrayList<PagerAdapter>();
-
-    private static ItemCursor currentCursor;
+    private ArrayList<DayPicItem> mList;
+    private boolean hasChanged = false;
 
     private MyDBHelper(Context context) {
         super(context, DB_NAME, null, VERSION);
@@ -35,37 +29,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
             singleton = new MyDBHelper(context.getApplicationContext());
         }
         return singleton;
-    }
-
-    public static void addAdapter(PagerAdapter adapter) {
-        synchronized (mAdapters) {
-            mAdapters.add(adapter);
-        }
-    }
-
-    public static void delAdapter(PagerAdapter adapter) {
-        synchronized (mAdapters) {
-            mAdapters.remove(adapter);
-        }
-    }
-
-    private static void notifyAdapter() {
-        //Log.i("PagerAdapters", ""+mAdapters.size());
-
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (mAdapters) {
-                    for (PagerAdapter a : mAdapters) {
-                        a.notifyDataSetChanged();
-                    }
-                }
-            }
-        });
-    }
-
-    public ItemCursor getCurrentCursor() {
-        return currentCursor;
     }
 
     // 首次运行，创建数据库
@@ -124,7 +87,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         long id = getWritableDatabase().insert(TABLE_DAYPIC, null, cv);
         Log.i(TAG, "数据库id：" + id);
 
-        notifyAdapter();
+        hasChanged = true;
 
         return id;
     }
@@ -173,43 +136,46 @@ public class MyDBHelper extends SQLiteOpenHelper {
                 "WHERE _id IN(SELECT _id FROM daypic_tbl ORDER BY _id LIMIT ?);";
         db.execSQL(sql, new String[]{String.valueOf(delcount)});
 
-        notifyAdapter();
+        hasChanged = true;
+
         return list;
     }
 
+    public ArrayList<DayPicItem> getArrayList() {
+        if (mList == null || hasChanged) {
+            mList = queryItems();
+            hasChanged = false;
+        }
+        return mList;
+    }
+
     // 用于显示列表
-    public ItemCursor queryItems() {
+    private ArrayList<DayPicItem> queryItems() {
         Cursor c = getReadableDatabase().query(
                 TABLE_DAYPIC, null, null, null, null, null,
                 "_id desc");
 
         //Log.i(TAG, "数量:" + c.getCount());
-        currentCursor = new ItemCursor(c);
 
-        notifyAdapter();
-        return currentCursor;
+        DayPicItem p;
+        ArrayList<DayPicItem> ret = new ArrayList<>();
+
+        if (c.moveToFirst()) {
+            do {
+                DayPicItem item = new DayPicItem();
+
+                item.set_id(c.getLong(c.getColumnIndex("_id")));
+                item.setTitle(c.getString(c.getColumnIndex("title")));
+                item.setDate(c.getString(c.getColumnIndex("date")));
+                item.setDescrip(c.getString(c.getColumnIndex("descrip")));
+                item.setIcon(c.getBlob(c.getColumnIndex("icon")));
+
+                ret.add(item);
+            } while (c.moveToNext());
+        }
+        c.close();
+
+        return ret;
     }
 
-    // 专为DayPicItem的CursorWarpper
-    public static class ItemCursor extends CursorWrapper {
-        public ItemCursor(Cursor cursor) {
-            super(cursor);
-        }
-
-        public DayPicItem getItem() {
-            if (isBeforeFirst() || isAfterLast())
-                return null;
-
-            DayPicItem item = new DayPicItem();
-
-            item.set_id(getLong(getColumnIndex("_id")));
-            item.setTitle(getString(getColumnIndex("title")));
-            item.setDate(getString(getColumnIndex("date")));
-            item.setDescrip(getString(getColumnIndex("descrip")));
-            item.setIcon(getBlob(getColumnIndex("icon")));
-
-            //Log.i(TAG, "getItem " + getPosition());
-            return item;
-        }
-    }
 }

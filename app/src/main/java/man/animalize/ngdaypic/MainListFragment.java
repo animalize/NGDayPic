@@ -5,13 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,12 +16,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
 
 import man.animalize.ngdaypic.Base.DayPicItem;
 import man.animalize.ngdaypic.Base.MyDBHelper;
@@ -36,47 +35,7 @@ public class MainListFragment extends ListFragment {
     private static final String TAG = "MainListFragment";
     // 用于判断是否在运行
     private static int objectCount = 0;
-    private MyDBHelper.ItemCursor mCursor;
-    private ItemCursorAdapter mAdapter;
-    private LoaderManager.LoaderCallbacks callbacks =
-            new LoaderManager.LoaderCallbacks<MyDBHelper.ItemCursor>() {
-                // 创建Loader后，开始Load
-                @Override
-                public Loader<MyDBHelper.ItemCursor> onCreateLoader(int id, Bundle args) {
-
-                    return (Loader) new CursorLoader(getActivity()) {
-                        @Override
-                        public Cursor loadInBackground() {
-                            MyDBHelper db = MyDBHelper.getInstance(getActivity());
-                            synchronized (db) {
-                                return db.queryItems();
-                            }
-                        }
-                    };
-                }
-
-
-                @Override
-                public void onLoaderReset(android.support.v4.content.Loader<MyDBHelper.ItemCursor> loader) {
-
-                }
-
-                // Load结束
-                @Override
-                public void onLoadFinished(android.support.v4.content.Loader<MyDBHelper.ItemCursor> loader, MyDBHelper.ItemCursor data) {
-                    mCursor = data;
-
-                    // 为adapter设置cursor
-                    if (mAdapter == null) {
-                        mAdapter = new ItemCursorAdapter(getActivity(), mCursor);
-                        setListAdapter(mAdapter);
-                    } else
-                        mAdapter.changeCursor(mCursor);
-
-                    Log.i(TAG, "onLoadFinished，当前数量" + mCursor.getCount());
-                }
-
-            };
+    private MyArrayListAdapter adapter;
 
     // 广播接收器。 当数据库改变时，用doQuery()刷新显示列表
     private BroadcastReceiver mReciver = new BroadcastReceiver() {
@@ -106,12 +65,23 @@ public class MainListFragment extends ListFragment {
         objectCount -= 1;
     }
 
-    // 刷新显示列表
-    // LoaderManager会使用LoaderManager.LoaderCallbacks完成具体任务
     private void doQuery() {
-        LoaderManager lm = getLoaderManager();
-        lm.restartLoader(1, null, callbacks);
-        Log.i(TAG, "启动loader");
+        AsyncTask<Void, Integer, ArrayList<DayPicItem>> at = new AsyncTask() {
+
+            @Override
+            protected Object doInBackground(Object[] params) {
+                return MyDBHelper.getInstance(MainListFragment.this.getActivity())
+                        .getArrayList();
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                ArrayList<DayPicItem> al = (ArrayList<DayPicItem>) o;
+                MainListFragment.this.adapter.setArrayList(al);
+            }
+        };
+        at.execute();
     }
 
     @Override
@@ -120,13 +90,14 @@ public class MainListFragment extends ListFragment {
         setHasOptionsMenu(true);
         getActivity().setTitle("条目列表");
 
+        // 注册adapter
+        adapter = new MyArrayListAdapter(getActivity());
+        setListAdapter(adapter);
+
         // 注册广播接收器
         // 接到此广播时，会刷新显示列表
         IntentFilter itf = new IntentFilter(BackService.FILTER);
         getActivity().registerReceiver(mReciver, itf);
-
-        // 刷新显示列表
-        doQuery();
 
         getActivity().invalidateOptionsMenu();
     }
@@ -135,11 +106,6 @@ public class MainListFragment extends ListFragment {
     public void onDestroy() {
         // 注销广播接收器
         getActivity().unregisterReceiver(mReciver);
-
-        // 关闭cursor
-        if (mCursor != null) {
-            mCursor.close();
-        }
 
         super.onDestroy();
     }
@@ -151,6 +117,9 @@ public class MainListFragment extends ListFragment {
         NotificationManager nm =
                 (NotificationManager) inflater.getContext().getSystemService(NOTIFICATION_SERVICE);
         nm.cancel(1);
+
+        // 刷新显示列表
+        doQuery();
 
         return inflater.inflate(R.layout.fragment_list, container, false);
     }
@@ -220,65 +189,81 @@ public class MainListFragment extends ListFragment {
 
     }
 
-    private class ViewHolder {
+    private static class ViewHolder {
         public ImageView icon;
         public TextView title;
         public TextView date;
     }
 
-    private class ItemCursorAdapter extends CursorAdapter {
+    private class MyArrayListAdapter extends ArrayAdapter<DayPicItem> {
+        private ArrayList<DayPicItem> mList;
+        private Context context;
         // 小图标的点击处理
         private MyClickListener myListener = new MyClickListener();
 
-        public ItemCursorAdapter(Context context, MyDBHelper.ItemCursor c) {
-            super(context, c, 0);
+
+        public MyArrayListAdapter(Context context) {
+            super(context, R.layout.list_item_1);
+            this.context = context;
+        }
+
+        public void setArrayList(ArrayList<DayPicItem> al) {
+            mList = al;
+            notifyDataSetChanged();
         }
 
         @Override
-        public View newView(final Context context, final Cursor cursor, ViewGroup parent) {
-            LayoutInflater inflater = (LayoutInflater) context.
-                    getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            View v = inflater.inflate(R.layout.list_item_1,
-                    parent, false);
-
-            // 点击图片的事件
-            ImageView icon = (ImageView) v.findViewById(R.id.imgviewid);
-            icon.setOnClickListener(myListener);
-
-            // holder
-            ViewHolder holder = new ViewHolder();
-            holder.icon = icon;
-            holder.title = (TextView) v.findViewById(R.id.texttitleid);
-            holder.date = (TextView) v.findViewById(R.id.textdateid);
-            v.setTag(holder);
-
-            return v;
+        public int getCount() {
+            if (mList == null) {
+                return 0;
+            } else {
+                return mList.size();
+            }
         }
 
         @Override
-        public void bindView(final View view, final Context context, final Cursor cursor) {
-            // 从cursor得到item对象
-            final DayPicItem item = ((MyDBHelper.ItemCursor) cursor).getItem();
-            if (item == null)
-                return;
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            DayPicItem item = mList.get(position);
+            View view;
 
-            ViewHolder holder = (ViewHolder) view.getTag();
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) context.
+                        getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            // 显示小图标
+                view = inflater.inflate(R.layout.list_item_1,
+                        parent, false);
+
+                // 点击图片的事件
+                ImageView icon = (ImageView) view.findViewById(R.id.imgviewid);
+                icon.setOnClickListener(myListener);
+
+                // holder
+                holder = new ViewHolder();
+                holder.icon = icon;
+                holder.title = (TextView) view.findViewById(R.id.texttitleid);
+                holder.date = (TextView) view.findViewById(R.id.textdateid);
+                view.setTag(holder);
+            } else {
+                view = convertView;
+                holder = (ViewHolder) view.getTag();
+            }
+
+            // 显示 小图标
             byte[] icon = item.getIcon();
             if (icon != null) {
                 Glide.with(context).load(icon).dontAnimate().into(holder.icon);
-                //holder.icon.setImageBitmap(BitmapFactory.decodeByteArray(icon, 0, icon.length));
                 holder.icon.setTag((int) item.get_id());
             } else {
                 holder.icon.setImageResource(android.R.color.transparent);
                 holder.icon.setTag(-1);
             }
 
-            // 标题、日期
+            // 显示 标题、日期
             holder.title.setText(" " + item.getTitle());
             holder.date.setText("  " + item.getDate());
+
+            return view;
         }
 
         // 图片点击监听器
