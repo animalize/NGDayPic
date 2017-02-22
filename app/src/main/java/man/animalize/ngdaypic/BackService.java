@@ -2,17 +2,19 @@ package man.animalize.ngdaypic;
 
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
+import android.os.IBinder;
+import android.os.SystemClock;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ import man.animalize.ngdaypic.Utility.Fetcher;
 import man.animalize.ngdaypic.Utility.FileReadWrite;
 
 
-public class BackService extends IntentService {
+public class BackService extends Service {
     public static final String FILTER = "man.animalize.ngdaypic.got";
     private static final String TAG = "BackService";
     private static int POLL_INTERVAL_HOUR = 3;
@@ -34,7 +36,7 @@ public class BackService extends IntentService {
     private Handler mHandler;
 
     public BackService() {
-        super(TAG);
+        super();
     }
 
     // 得到刷新间隔，小时数
@@ -48,22 +50,21 @@ public class BackService extends IntentService {
 
         // 创建或得到已有的PendingIntent
         Intent i = new Intent(context, BackService.class);
-        PendingIntent pi = PendingIntent.getService(
-                context, 0, i, 0);
-
-        // 得到AlarmManager
-        AlarmManager alarmManager = (AlarmManager)
-                context.getSystemService(Context.ALARM_SERVICE);
 
         // 启动 或 停止
         String t;
         if (isOn) {
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-                    System.currentTimeMillis(),
-                    POLL_INTERVAL_HOUR * 1000 * 3600,
-                    pi);
+            context.startService(i);
             t = "每日图片:正在启动服务";
         } else {
+            // 得到AlarmManager
+            AlarmManager alarmManager = (AlarmManager)
+                    context.getSystemService(Context.ALARM_SERVICE);
+
+            PendingIntent pi = PendingIntent.getService(
+                    context, 0, i, 0);
+
+            // 停止服务
             alarmManager.cancel(pi);
             pi.cancel();
             t = "每日图片:正在停止服务";
@@ -89,11 +90,10 @@ public class BackService extends IntentService {
         mHandler = new Handler();
     }
 
-    // 服务被杀后自动重启、并重新传入intent
+    @Nullable
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        return START_REDELIVER_INTENT;
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     // Toast只能在主UI线程使用
@@ -194,30 +194,59 @@ public class BackService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-        Log.i(TAG, "onHandleIntent");
+    public int onStartCommand(final Intent intent, int flags, int startId) {
 
-        boolean allow3g = intent.getBooleanExtra("allow3g", false);
-        if (!allow3g) {
-            // 检查wifi状态
-            ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            if (!mWifi.isConnected()) {
-                toast("每日图片：WIFI不可用");
-                return;
+        // 执行任务
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                boolean allow3g = intent.getBooleanExtra("allow3g", false);
+                if (!allow3g) {
+                    // 检查wifi状态
+                    ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                    if (!mWifi.isConnected()) {
+                        toast("每日图片：WIFI不可用");
+                        return;
+                    }
+                }
+
+                Fetcher f = new Fetcher();
+
+                // 分区获取英文、中文网站
+                boolean r1 = doWork(1, f);
+                boolean r2 = doWork(2, f);
+                if (!r1 && !r2)
+                    return;
+
+                // 广播，让ListFragment刷新内容
+                Intent i = new Intent(FILTER);
+                sendBroadcast(i);
+            }
+        }).start();
+
+        Context context = getApplicationContext();
+        if (!isServiceAlarmOn(context) &&
+                !intent.getBooleanExtra("once", false)) {
+            // 没启动 并且 不是一次任务
+            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+            long triggerAtTime = SystemClock.elapsedRealtime() +
+                    POLL_INTERVAL_HOUR * 3600 * 1000;
+            Intent i = new Intent(context, BackService.class);
+            PendingIntent pi = PendingIntent.getService(context, 0, i, 0);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                am.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                        triggerAtTime,
+                        pi);
+            } else {
+                am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                        triggerAtTime,
+                        pi);
             }
         }
 
-        Fetcher f = new Fetcher();
-
-        // 分区获取英文、中文网站
-        boolean r1 = doWork(1, f);
-        boolean r2 = doWork(2, f);
-        if (!r1 && !r2)
-            return;
-
-        // 广播，让ListFragment刷新内容
-        Intent i = new Intent(FILTER);
-        sendBroadcast(i);
+        return super.onStartCommand(intent, flags, startId);
     }
 }

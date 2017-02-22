@@ -169,6 +169,7 @@ public class MainListFragment extends ListFragment {
             case R.id.refreshid:
                 Intent i = new Intent(getActivity(), BackService.class);
                 i.putExtra("allow3g", true);
+                i.putExtra("once", true);
                 getActivity().startService(i);
 
                 return true;
