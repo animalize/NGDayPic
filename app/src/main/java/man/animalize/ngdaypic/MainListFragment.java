@@ -99,7 +99,19 @@ public class MainListFragment extends ListFragment {
         IntentFilter itf = new IntentFilter(BackService.FILTER);
         getActivity().registerReceiver(mReciver, itf);
 
+        // 启停服务
+        boolean should_on = PreferenceManager
+                .getDefaultSharedPreferences(getContext())
+                .getBoolean("should_on", false);
+        boolean is_on = BackService.isServiceAlarmOn();
+
+        if (should_on != is_on && should_on) {
+            BackService.setServiceAlarm(true);
+        }
+
+        // 菜单
         getActivity().invalidateOptionsMenu();
+
     }
 
     @Override
@@ -154,7 +166,7 @@ public class MainListFragment extends ListFragment {
 
         // 服务状态
         mi = menu.findItem(R.id.toggleid);
-        if (BackService.isServiceAlarmOn(getActivity()))
+        if (BackService.isServiceAlarmOn())
             mi.setTitle("停止后台服务");
         else
             mi.setTitle("启动后台服务");
@@ -175,8 +187,8 @@ public class MainListFragment extends ListFragment {
                 return true;
 
             case R.id.toggleid:
-                boolean is_on = BackService.isServiceAlarmOn(getActivity());
-                BackService.setServiceAlarm(getActivity(), !is_on);
+                boolean is_on = BackService.isServiceAlarmOn();
+                BackService.setServiceAlarm(!is_on);
                 PreferenceManager.getDefaultSharedPreferences(getActivity())
                         .edit().putBoolean("should_on", !is_on).apply();
 

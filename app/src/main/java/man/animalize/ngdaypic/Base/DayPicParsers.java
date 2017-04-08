@@ -24,7 +24,7 @@ public class DayPicParsers {
         DayPicItem item = new DayPicItem();
 
         String url = "http://photography.nationalgeographic.com/photography/photo-of-the-day/";
-        String html = f.getString(url, "UTF-8");
+        String html = f.getString(url);
         if (html == null)
             throw new Exception("无法下载英文版html");
 
@@ -58,7 +58,7 @@ public class DayPicParsers {
         DayPicItem item = new DayPicItem();
 
         String url = "http://www.nationalgeographic.com.cn/photography/photo_of_the_day/";
-        String html = f.getString(url, "UTF-8");
+        String html = f.getString(url);
         if (html == null)
             throw new Exception("无法下载中文版html, 1");
 
@@ -74,7 +74,7 @@ public class DayPicParsers {
         String url2 = "http://www.nationalgeographic.com.cn" +
                 matcher.group(1);
 
-        html = f.getString(url2, "UTF-8");
+        html = f.getString(url2);
         if (html == null)
             throw new Exception("无法下载中文版html, 2");
 

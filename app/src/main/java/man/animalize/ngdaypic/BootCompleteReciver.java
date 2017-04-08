@@ -13,7 +13,7 @@ public class BootCompleteReciver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(intent == null ||
+        if (intent == null ||
                 !intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED))
             return;
 
@@ -21,9 +21,10 @@ public class BootCompleteReciver extends BroadcastReceiver {
         boolean should_on = PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getBoolean("should_on", false);
-        boolean is_on = BackService.isServiceAlarmOn(context);
+        boolean is_on = BackService.isServiceAlarmOn();
 
-        if (should_on != is_on)
-            BackService.setServiceAlarm(context, should_on);
+        if (should_on != is_on && should_on) {
+            BackService.setServiceAlarm(true);
+        }
     }
 }
