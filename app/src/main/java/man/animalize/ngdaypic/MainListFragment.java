@@ -50,19 +50,24 @@ public class MainListFragment extends ListFragment {
     }
 
     public static boolean isRunning() {
-        return objectCount != 0;
+        return objectCount > 0;
     }
 
     @Override
     public void onStart() {
-        objectCount += 1;
         super.onStart();
+        objectCount += 1;
+
+        // 取消通知栏
+        NotificationManager nm =
+                (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+        nm.cancelAll();
     }
 
     @Override
     public void onStop() {
-        super.onStop();
         objectCount -= 1;
+        super.onStop();
     }
 
     private void doQuery() {
@@ -125,11 +130,6 @@ public class MainListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // 取消通知栏
-        NotificationManager nm =
-                (NotificationManager) inflater.getContext().getSystemService(NOTIFICATION_SERVICE);
-        nm.cancel(1);
-
         // 刷新显示列表
         doQuery();
 

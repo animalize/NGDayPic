@@ -28,7 +28,7 @@ import man.animalize.ngdaypic.Utility.FileReadWrite;
 public class BackService extends IntentService {
     public static final String FILTER = "man.animalize.ngdaypic.got";
     private static final String TAG = "BackService";
-    private static int POLL_INTERVAL_HOUR = 3;
+    private static int POLL_INTERVAL_HOUR = 4;
 
     // 用于在主线程显示toast
     private Handler mHandler;
