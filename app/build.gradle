@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "man.animalize.ngdaypic"
         minSdkVersion 14
@@ -16,28 +16,25 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
+            minifyEnabled false
         }
-    }
-    productFlavors {
     }
 
     applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def outputFile = output.outputFile
-            if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                //这里修改apk文件名
-                //def fileName = "demo_${variant.productFlavors[0].name}-${defaultConfig.versionCode}-${defaultConfig.versionName}-${releaseTime() }.apk"
-                def fileName = "NGDayPic.apk"
-                output.outputFile = new File(outputFile.parent, fileName)
-            }
+        variant.outputs.all {output ->
+            outputFileName = "NGDayPic.apk"
         }
     }
 }
 
 dependencies {
+    repositories {
+        mavenCentral()
+        maven { url "https://maven.google.com" }
+    }
+
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.android.support:support-v4:25.1.0'
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    compile 'com.github.bumptech.glide:glide:3.8.0'
+    compile 'com.android.support:support-v4:26.0.2'
+    compile 'com.squareup.okhttp3:okhttp:3.9.0'
 }
