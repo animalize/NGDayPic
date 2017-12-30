@@ -62,8 +62,8 @@ public class DayPicParsers {
         if (html == null)
             throw new Exception("无法下载中文版html, 1");
 
-        String pstr = "<section class=\"show-imgs\">.*?"
-                + "<a href=\"([^\"]+)\"><img";
+        String pstr = "<ul class=\"cf showImg-list\">.*?"
+                + "<a class=\"imgs\" href=\"([^\"]+)\"><img";
 
         Pattern pattern = Pattern.compile(pstr, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(html);
@@ -79,10 +79,10 @@ public class DayPicParsers {
             throw new Exception("无法下载中文版html, 2");
 
 
-        pstr = "<div class=\"title\">(?:每日一图：)?(.*?)</div>\\s*" +
-                "<span class=\"time\">(?:发布时间：)?(.*?)</span>.*?" +
-                "<div class=\"public-p.*?>(.*?)" +
-                "</div>\\s*<p";
+        pstr = "<h2 class=\"title\">(?:每日一图：)?(.*?)</h2>.*?" +
+                "<div class=\"release_time\">(?:发布时间：)?(.*?)</div>.*?" +
+                "<div class=\"article_con\">(.*?)" +
+                "<div class=\"counsel\">";
 
         pattern = Pattern.compile(pstr, Pattern.DOTALL);
         matcher = pattern.matcher(html);
