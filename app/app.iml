@@ -115,10 +115,11 @@
     <orderEntry type="library" name="com.android.support:support-v4-26.0.2" level="project" />
     <orderEntry type="library" name="com.android.support:support-core-utils-26.0.2" level="project" />
     <orderEntry type="library" name="com.android.support:support-core-ui-26.0.2" level="project" />
-    <orderEntry type="library" name="com.squareup.okhttp3:okhttp:3.9.0@jar" level="project" />
+    <orderEntry type="library" name="com.squareup.okhttp3:okhttp:3.9.1@jar" level="project" />
     <orderEntry type="library" name="com.squareup.okio:okio:1.13.0@jar" level="project" />
     <orderEntry type="library" name="com.android.support:support-compat-26.0.2" level="project" />
     <orderEntry type="library" name="com.android.support:support-annotations:26.0.2@jar" level="project" />
     <orderEntry type="library" name="com.android.support:support-fragment-26.0.2" level="project" />
+    <orderEntry type="library" name="android-android-26" level="project" />
   </component>
 </module>
