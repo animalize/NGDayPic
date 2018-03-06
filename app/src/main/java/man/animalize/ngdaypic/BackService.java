@@ -31,8 +31,7 @@ public class BackService extends IntentService {
     private static final String TAG = "BackService";
     private static int POLL_INTERVAL_HOUR = 6;
 
-    private LocalBroadcastManager mLBM =
-            LocalBroadcastManager.getInstance(this);
+    private LocalBroadcastManager mLBM;
 
     // 用于在主线程显示toast
     private Handler mHandler;
@@ -96,6 +95,7 @@ public class BackService extends IntentService {
     public void onCreate() {
         super.onCreate();
         mHandler = new Handler();
+        mLBM = LocalBroadcastManager.getInstance(this);
     }
 
     @Override
