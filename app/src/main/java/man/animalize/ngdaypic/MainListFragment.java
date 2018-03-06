@@ -39,8 +39,7 @@ public class MainListFragment extends ListFragment {
     private static int objectCount = 0;
     private MyArrayListAdapter adapter;
 
-    private LocalBroadcastManager mLBM =
-            LocalBroadcastManager.getInstance(getContext());
+    private LocalBroadcastManager mLBM;
 
     // 广播接收器。 当数据库改变时，用doQuery()刷新显示列表
     private BroadcastReceiver mReciver = new BroadcastReceiver() {
@@ -108,6 +107,7 @@ public class MainListFragment extends ListFragment {
 
         // 注册广播接收器
         // 接到此广播时，会刷新显示列表
+        mLBM = LocalBroadcastManager.getInstance(getContext());
         IntentFilter itf = new IntentFilter(BackService.FILTER);
         mLBM.registerReceiver(mReciver, itf);
 

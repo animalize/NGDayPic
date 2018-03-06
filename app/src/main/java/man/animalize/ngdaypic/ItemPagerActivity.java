@@ -21,8 +21,7 @@ import man.animalize.ngdaypic.Base.MyDBHelper;
 public class ItemPagerActivity extends FragmentActivity {
     private myPagerAdapter pa;
 
-    private LocalBroadcastManager mLBM =
-            LocalBroadcastManager.getInstance(this);
+    private LocalBroadcastManager mLBM;
 
     // 广播接收器。 当数据库改变时，用doQuery()刷新显示列表
     private BroadcastReceiver mReciver = new BroadcastReceiver() {
@@ -91,6 +90,7 @@ public class ItemPagerActivity extends FragmentActivity {
 
         // 注册广播接收器
         // 接到此广播时，会刷新显示列表
+        mLBM = LocalBroadcastManager.getInstance(this);
         IntentFilter itf = new IntentFilter(BackService.FILTER);
         mLBM.registerReceiver(mReciver, itf);
     }
