@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 
 import java.util.ArrayList;
@@ -19,7 +20,9 @@ import man.animalize.ngdaypic.Base.MyDBHelper;
 
 public class ItemPagerActivity extends FragmentActivity {
     private myPagerAdapter pa;
-    private ViewPager mViewPager;
+
+    private LocalBroadcastManager mLBM =
+            LocalBroadcastManager.getInstance(this);
 
     // 广播接收器。 当数据库改变时，用doQuery()刷新显示列表
     private BroadcastReceiver mReciver = new BroadcastReceiver() {
@@ -53,7 +56,7 @@ public class ItemPagerActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
 
         // ViewPager
-        mViewPager = new ViewPager(this);
+        ViewPager mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.viewPager);
         //mViewPager.setOffscreenPageLimit(1);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -89,13 +92,13 @@ public class ItemPagerActivity extends FragmentActivity {
         // 注册广播接收器
         // 接到此广播时，会刷新显示列表
         IntentFilter itf = new IntentFilter(BackService.FILTER);
-        registerReceiver(mReciver, itf);
+        mLBM.registerReceiver(mReciver, itf);
     }
 
     @Override
     protected void onDestroy() {
         // 注销广播接收器
-        unregisterReceiver(mReciver);
+        mLBM.unregisterReceiver(mReciver);
 
         super.onDestroy();
     }
@@ -103,16 +106,16 @@ public class ItemPagerActivity extends FragmentActivity {
     public static class myPagerAdapter extends FragmentStatePagerAdapter {
         private ArrayList<DayPicItem> al;
 
-        public myPagerAdapter(FragmentManager fm) {
+        myPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
-        public void setArrayList(ArrayList<DayPicItem> al) {
+        void setArrayList(ArrayList<DayPicItem> al) {
             this.al = al;
             notifyDataSetChanged();
         }
 
-        public DayPicItem getDayPicItem(int position) {
+        DayPicItem getDayPicItem(int position) {
             return al.get(position);
         }
 

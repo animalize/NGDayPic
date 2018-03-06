@@ -8,7 +8,9 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,6 +39,9 @@ public class MainListFragment extends ListFragment {
     private static int objectCount = 0;
     private MyArrayListAdapter adapter;
 
+    private LocalBroadcastManager mLBM =
+            LocalBroadcastManager.getInstance(getContext());
+
     // 广播接收器。 当数据库改变时，用doQuery()刷新显示列表
     private BroadcastReceiver mReciver = new BroadcastReceiver() {
         @Override
@@ -61,7 +66,9 @@ public class MainListFragment extends ListFragment {
         // 取消通知栏
         NotificationManager nm =
                 (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-        nm.cancelAll();
+        if (nm != null) {
+            nm.cancelAll();
+        }
     }
 
     @Override
@@ -102,7 +109,7 @@ public class MainListFragment extends ListFragment {
         // 注册广播接收器
         // 接到此广播时，会刷新显示列表
         IntentFilter itf = new IntentFilter(BackService.FILTER);
-        getActivity().registerReceiver(mReciver, itf);
+        mLBM.registerReceiver(mReciver, itf);
 
         // 启停服务
         boolean should_on = PreferenceManager
@@ -122,7 +129,7 @@ public class MainListFragment extends ListFragment {
     @Override
     public void onDestroy() {
         // 注销广播接收器
-        getActivity().unregisterReceiver(mReciver);
+        mLBM.unregisterReceiver(mReciver);
 
         super.onDestroy();
     }
@@ -205,7 +212,7 @@ public class MainListFragment extends ListFragment {
     private static class ViewHolder {
         public ImageView icon;
         public TextView title;
-        public TextView date;
+        TextView date;
     }
 
     private class MyArrayListAdapter extends ArrayAdapter<DayPicItem> {
@@ -215,12 +222,12 @@ public class MainListFragment extends ListFragment {
         private MyClickListener myListener = new MyClickListener();
 
 
-        public MyArrayListAdapter(Context context) {
+        MyArrayListAdapter(Context context) {
             super(context, R.layout.list_item_1);
             this.context = context;
         }
 
-        public void setArrayList(ArrayList<DayPicItem> al) {
+        void setArrayList(ArrayList<DayPicItem> al) {
             mList = al;
             notifyDataSetChanged();
         }
@@ -234,6 +241,7 @@ public class MainListFragment extends ListFragment {
             }
         }
 
+        @NonNull
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
@@ -248,14 +256,14 @@ public class MainListFragment extends ListFragment {
                         parent, false);
 
                 // 点击图片的事件
-                ImageView icon = (ImageView) view.findViewById(R.id.imgviewid);
+                ImageView icon = view.findViewById(R.id.imgviewid);
                 icon.setOnClickListener(myListener);
 
                 // holder
                 holder = new ViewHolder();
                 holder.icon = icon;
-                holder.title = (TextView) view.findViewById(R.id.texttitleid);
-                holder.date = (TextView) view.findViewById(R.id.textdateid);
+                holder.title = view.findViewById(R.id.texttitleid);
+                holder.date = view.findViewById(R.id.textdateid);
                 view.setTag(holder);
             } else {
                 view = convertView;

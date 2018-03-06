@@ -13,6 +13,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ public class BackService extends IntentService {
     public static final String FILTER = "man.animalize.ngdaypic.got";
     private static final String TAG = "BackService";
     private static int POLL_INTERVAL_HOUR = 6;
+
+    private LocalBroadcastManager mLBM =
+            LocalBroadcastManager.getInstance(this);
 
     // 用于在主线程显示toast
     private Handler mHandler;
@@ -55,6 +59,9 @@ public class BackService extends IntentService {
         // 得到AlarmManager
         AlarmManager alarmManager = (AlarmManager)
                 context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager == null) {
+            return;
+        }
 
         // 启动 或 停止
         String t;
@@ -115,7 +122,7 @@ public class BackService extends IntentService {
 
         // 广播，让ListFragment刷新内容
         Intent i = new Intent(FILTER);
-        sendBroadcast(i);
+        mLBM.sendBroadcast(i);
     }
 
     // Toast只能在主UI线程使用
