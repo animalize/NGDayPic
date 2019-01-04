@@ -1,15 +1,19 @@
 package man.animalize.ngdaypic;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -124,6 +129,10 @@ public class MainListFragment extends ListFragment {
         // 菜单
         getActivity().invalidateOptionsMenu();
 
+        // 申请权限
+        if (!allowPermission()) {
+            requestPermission(1);
+        }
     }
 
     @Override
@@ -207,6 +216,37 @@ public class MainListFragment extends ListFragment {
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED) {
+                    // 申请成功
+                } else {
+                    Toast.makeText(getContext(),
+                            "您没有授予权限，无法进行保存。",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+
+    private boolean allowPermission() {
+        return ContextCompat.checkSelfPermission(
+                getContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermission(int code) {
+        ActivityCompat.requestPermissions(
+                getActivity(),
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                code);
     }
 
     private static class ViewHolder {

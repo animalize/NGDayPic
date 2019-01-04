@@ -116,9 +116,11 @@ public class BackService extends IntentService {
 
         // 分区获取英文、中文网站
         boolean r1 = doWork(1, f);
-        boolean r2 = doWork(2, f);
-        if (!r1 && !r2)
+        if (!r1)
             return;
+//        boolean r2 = doWork(2, f);
+//        if (!r1 && !r2)
+//            return;
 
         // 广播，让ListFragment刷新内容
         Intent i = new Intent(FILTER);
