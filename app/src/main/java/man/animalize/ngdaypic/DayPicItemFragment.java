@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 
@@ -145,7 +146,7 @@ public class DayPicItemFragment
 
         // Inflate the main_menu for this fragment
         View v = inflater.inflate(R.layout.fragment_day_pic_item, container, false);
-        mImageView = (ImageView) v.findViewById(R.id.image_view);
+        mImageView = v.findViewById(R.id.image_view);
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,7 +172,7 @@ public class DayPicItemFragment
         }
 
         // 文字
-        mTextView = (TextView) v.findViewById(R.id.text_view);
+        mTextView = v.findViewById(R.id.text_view);
         mTextView.setMovementMethod(new ScrollingMovementMethod());
         mTextView.setText("标题：" + mItem.getTitle() +
                 "\n介绍：" + mItem.getDescrip() +

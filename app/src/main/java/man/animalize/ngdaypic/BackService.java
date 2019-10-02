@@ -12,9 +12,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 
@@ -116,11 +117,9 @@ public class BackService extends IntentService {
 
         // 分区获取英文、中文网站
         boolean r1 = doWork(1, f);
-        if (!r1)
+        boolean r2 = doWork(2, f);
+        if (!r1 && !r2)
             return;
-//        boolean r2 = doWork(2, f);
-//        if (!r1 && !r2)
-//            return;
 
         // 广播，让ListFragment刷新内容
         Intent i = new Intent(FILTER);

@@ -57,7 +57,7 @@ public class DayPicParsers {
         Log.i(TAG, "开始解析");
         DayPicItem item = new DayPicItem();
 
-        String url = "http://www.nationalgeographic.com.cn/photography/photo_of_the_day/";
+        String url = "http://www.ngchina.com.cn/photography/photo_of_the_day/";
         String html = f.getString(url);
         if (html == null)
             throw new Exception("无法下载中文版html, 1");
@@ -80,9 +80,10 @@ public class DayPicParsers {
 
 
         pstr = "<h2 class=\"title\">(?:每日一图：)?(.*?)</h2>.*?" +
-                "<div class=\"release_time\">(?:发布时间：)?(.*?)</div>.*?" +
+                "<div class=\"release_time\">(.*?)</div>.*?" +
                 "<div class=\"article_con\">(.*?)" +
-                "<div class=\"counsel\">";
+                "<div class=\"counsel\">.*?";// +
+        //"<li><a href=\"###\"><img src=\"(.*?)\"";
 
         pattern = Pattern.compile(pstr, Pattern.DOTALL);
         matcher = pattern.matcher(html);
@@ -93,6 +94,7 @@ public class DayPicParsers {
         item.setTitle(removeTag(matcher.group(1)));
         item.setDate(matcher.group(2));
         item.setDescrip(removeTag(matcher.group(3)));
+        //item.setPicurl(matcher.group(4));
 
         // 忽略“编辑之选”
         if (item.getTitle().startsWith("编辑之选")) {

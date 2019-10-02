@@ -3,11 +3,12 @@ package man.animalize.ngdaypic;
 import android.app.ActionBar;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
 
 import java.util.Locale;
 
@@ -68,7 +69,7 @@ public class TouchImageFragment extends Fragment {
                 "图片%s (%,d字节)", jpgfn, jpg.length));
 
         // 显示
-        TouchImageView touch = (TouchImageView) v.findViewById(R.id.touchid);
+        TouchImageView touch = v.findViewById(R.id.touchid);
         touch.setImageBitmap(BitmapFactory.decodeByteArray(jpg, 0, jpg.length));
 
         return v;

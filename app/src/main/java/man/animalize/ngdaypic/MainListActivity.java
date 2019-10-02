@@ -1,6 +1,6 @@
 package man.animalize.ngdaypic;
 
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 
 public class MainListActivity extends OneFragmentActivity {
